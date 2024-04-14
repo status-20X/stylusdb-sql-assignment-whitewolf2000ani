@@ -77,3 +77,28 @@ test('Execute SQL Query with Multiple WHERE Clause', async () => {
     expect(result.length).toBe(1);
     expect(result[0]).toEqual({ id: '1', name: 'John' });
 });
+
+test('Parse SQL Query with Multiple WHERE Clauses', () => {
+    const query = 'SELECT id, name FROM sample WHERE age = 37 AND name = Jaadu';
+    const parsed = parseQuery(query);
+    expect(parsed).toEqual({
+        fields: ['id', 'name'],
+        table: 'sample',
+        whereClauses: [{
+            "field": "age",
+            "operator": "=",
+            "value": "37",
+        }, {
+            "field": "name",
+            "operator": "=",
+            "value": "Jaadu",
+        }]
+    });
+});
+
+test('Execute SQL Query with Multiple WHERE Clause', async () => {
+    const query = 'SELECT id, name FROM sample WHERE age = 37 AND name = Jaddu';
+    const result = await executeSELECTQuery(query);
+    expect(result.length).toBe(0);
+    expect(result[0]).toEqual(undefined);
+});

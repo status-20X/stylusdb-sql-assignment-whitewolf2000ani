@@ -16,22 +16,15 @@ function parseQuery(query) {
 }
 
 function parseWhereClause(whereString) {
-    if (!whereString.trim()) {
-        return []; // No conditions, return an empty array
-    }
-
-    const conditions = whereString.split(/ AND | OR /i);
-    try {
-        return conditions.map(condition => {
-            const [field, operator, value] = condition.split(/\s+/);
-            if (!field || !operator || !value) {
-                throw new Error('Invalid where clause format');
-            }
-            return { field, operator, value };
-        });
-    } catch (error) {
-        throw new Error('Error parsing where clause: ' + error.message);
-    }
+    const conditionRegex = /(.*?)(=|!=|>|<|>=|<=)(.*)/;
+    return whereString.split(/ AND | OR /i).map(conditionString => {
+        const match = conditionString.match(conditionRegex);
+        if (match) {
+            const [, field, operator, value] = match;
+            return { field: field.trim(), operator, value: value.trim() };
+        }
+        throw new Error('Invalid WHERE clause format');
+    });
 }
 
 
